@@ -8,4 +8,4 @@ npm install
 ```
 npm start
 ```
-test pipeline
+test full pipeline
