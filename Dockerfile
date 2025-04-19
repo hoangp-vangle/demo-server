@@ -5,7 +5,7 @@ FROM node:20
 
 WORKDIR /home/node/app
 
-ARG PORT=3001
+ARG PORT=80
 ENV PORT=${PORT}
 
 COPY package*.json ./
