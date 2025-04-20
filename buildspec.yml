@@ -20,7 +20,7 @@ phases:
       - docker push 254675571356.dkr.ecr.us-east-1.amazonaws.com/cdk-devsonlnv2-container-assets-254675571356-us-east-1:latest
       - echo '[{"name":"container-name","imageUri":"254675571356.dkr.ecr.us-east-1.amazonaws.com/cdk-devsonlnv2-container-assets-254675571356-us-east-1:latest"}]' > imagedefinitions.json
       - echo "Generate appspec.yaml"
-      - cat appspec.yaml > appspec.yml
+      - cat appspec.yml > appspec.yml
 
 artifacts:
   files:
