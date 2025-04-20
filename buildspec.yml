@@ -18,7 +18,61 @@ phases:
     commands:
       - echo "Pushing Docker image to ECR..."
       - docker push 254675571356.dkr.ecr.us-east-1.amazonaws.com/cdk-devsonlnv2-container-assets-254675571356-us-east-1:latest
-      - echo '[{"name":"app-container","imageUri":"254675571356.dkr.ecr.us-east-1.amazonaws.com/cdk-devsonlnv2-container-assets-254675571356-us-east-1:latest"}]' > imagedefinitions.json
+      
+      # Tạo mới hoàn toàn các file để tránh vấn đề về định dạng và comments
+      - echo "Creating deployment files..."
+      
+      # 1. imagedefinitions.json
+      - |
+        cat > imagedefinitions.json << 'EOL'
+        [{"name":"app-container","imageUri":"254675571356.dkr.ecr.us-east-1.amazonaws.com/cdk-devsonlnv2-container-assets-254675571356-us-east-1:latest"}]
+        EOL
+      
+      # 2. appspec.yml
+      - |
+        cat > appspec.yml << 'EOL'
+        version: 0.0
+        Resources:
+          - TargetService:
+              Type: AWS::ECS::Service
+              Properties:
+                TaskDefinition: <TASK_DEFINITION>
+                LoadBalancerInfo:
+                  ContainerName: "app-container"
+                  ContainerPort: 80
+                PlatformVersion: "LATEST"
+        EOL
+      
+      # 3. taskdef.json
+      - |
+        cat > taskdef.json << 'EOL'
+        {
+          "family": "ecs-bluegreen-taskdef",
+          "networkMode": "awsvpc",
+          "executionRoleArn": "arn:aws:iam::254675571356:role/ecsTaskExecutionRole",
+          "requiresCompatibilities": ["FARGATE"],
+          "cpu": "256",
+          "memory": "512",
+          "containerDefinitions": [
+            {
+              "name": "app-container",
+              "image": "<IMAGE1_NAME>",
+              "cpu": 0,
+              "portMappings": [
+                {
+                  "containerPort": 80,
+                  "hostPort": 80,
+                  "protocol": "tcp"
+                }
+              ],
+              "essential": true,
+              "environment": [],
+              "mountPoints": [],
+              "volumesFrom": []
+            }
+          ]
+        }
+        EOL
 
 artifacts:
   files:
